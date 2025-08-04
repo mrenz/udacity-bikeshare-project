@@ -83,6 +83,34 @@ def station_stats(df):
     print('-'*40)
 
 
+def user_stats(df):
+    """Displays statistics on bikeshare users."""
+
+    print('\nCalculating User Stats...\n')
+    start_time = time.time()
+
+    user_types = df['User Type'].value_counts()
+    print('User Type Counts: ', user_types.to_string())
+
+    # Display counts of gender
+    # Gender column unavailable for washington, so check if available
+    if 'Gender' in df:
+        gender_counts = df['Gender'].value_counts()
+        print('\nGender Counts: ', gender_counts.to_string())
+
+
+    # Display earliest, most recent, and most common year of birth
+    # Birth Year column unavailable for washington, so check if available
+    if 'Birth Year' in df:
+        print('\nEarliest birth year: ', int(df['Birth Year'].min()))
+        print('Most recent birth year: ', int(df['Birth Year'].max()))
+        print('Most common birth year: ', int(df['Birth Year'].mode()[0]))
+
+
+    print("\nThis took %s seconds." % (time.time() - start_time))
+    print('-'*40)
+
+
 def trip_duration_stats(df):
     """Displays statistics on the total and average trip duration."""
 
@@ -90,29 +118,11 @@ def trip_duration_stats(df):
     start_time = time.time()
 
     # display total travel time
-
+    df['Travel Time'] = df['End Time'] - df['Start Time']
+    print('Total travel time: ', df['Travel Time'].sum())
 
     # display mean travel time
-
-
-    print("\nThis took %s seconds." % (time.time() - start_time))
-    print('-'*40)
-
-
-def user_stats(df):
-    """Displays statistics on bikeshare users."""
-
-    print('\nCalculating User Stats...\n')
-    start_time = time.time()
-
-    # Display counts of user types
-
-
-    # Display counts of gender
-
-
-    # Display earliest, most recent, and most common year of birth
-
+    print('Mean travel time: ', df['Travel Time'].mean())
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -123,10 +133,10 @@ def main():
         city, month, day = get_filters()
         df = load_data(city, month, day)
 
-        time_stats(df)
         station_stats(df)
-        trip_duration_stats(df)
+        time_stats(df)
         user_stats(df)
+        trip_duration_stats(df)
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
